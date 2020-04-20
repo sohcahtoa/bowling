@@ -1,0 +1,47 @@
+plugins {
+	id 'org.springframework.boot' version '2.2.6.RELEASE'
+	id 'io.spring.dependency-management' version '1.0.9.RELEASE'
+	id 'java'
+	id 'groovy'
+	id 'idea'
+}
+
+group = 'com.example'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '1.8'
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	compileOnly 'org.projectlombok:lombok'
+	annotationProcessor 'org.projectlombok:lombok'
+	implementation 'org.codehaus.groovy:groovy-all:2.4.8'
+	implementation 'org.postgresql:postgresql'
+	implementation ("org.springframework.boot:spring-boot-starter-data-jpa") {
+		exclude group: 'org.apache.tomcat', module: 'tomcat-jdbc'
+	}
+	implementation 'org.hibernate:hibernate-java8:5.0.12.Final'
+
+	runtimeOnly 'org.springframework.boot:spring-boot-devtools'
+
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation "org.codehaus.groovy:groovy-all:2.4.8"
+	testImplementation "org.spockframework:spock-core:1.1-groovy-2.4"
+	testImplementation "org.spockframework:spock-spring:1.1-groovy-2.4"
+	testImplementation "com.github.javafaker:javafaker:1.0.1"
+	testCompileOnly 'org.projectlombok:lombok:1.18.12'
+	testAnnotationProcessor 'org.projectlombok:lombok:1.18.12'
+}
+
+test {
+	useJUnitPlatform()
+}
