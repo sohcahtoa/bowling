@@ -2,9 +2,9 @@ package com.example.bowling
 
 import com.example.bowling.apiModel.Game
 import com.example.bowling.apiModel.Player
-import org.springframework.http.HttpStatus
 
 import static com.example.bowling.ARandom.aRandom
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
 class GameServiceSpec extends BaseIntegrationSpec {
 
@@ -24,5 +24,13 @@ class GameServiceSpec extends BaseIntegrationSpec {
             assert player.currentFrame == 1
             assert player.currentScore == 0
         }
+    }
+
+    def "will return a not found if game is not found"() {
+        when:
+        findGame(aRandom.uuid(), status().isNotFound())
+
+        then:
+        noExceptionThrown()
     }
 }
