@@ -1,6 +1,7 @@
 plugins {
 	id 'org.springframework.boot' version '2.2.6.RELEASE'
 	id 'io.spring.dependency-management' version '1.0.9.RELEASE'
+	id 'com.avast.gradle.docker-compose' version '0.10.10'
 	id 'java'
 	id 'groovy'
 	id 'idea'
@@ -10,26 +11,21 @@ group = 'com.example'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '1.8'
 
-configurations {
-	compileOnly {
-		extendsFrom annotationProcessor
-	}
-}
-
 repositories {
 	mavenCentral()
 }
 
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
-	compileOnly 'org.projectlombok:lombok'
-	annotationProcessor 'org.projectlombok:lombok'
+	compileOnly 'org.projectlombok:lombok:1.18.+'
+	annotationProcessor 'org.projectlombok:lombok:1.18.+'
 	implementation 'org.codehaus.groovy:groovy-all:2.4.8'
 	implementation 'org.postgresql:postgresql'
 	implementation ("org.springframework.boot:spring-boot-starter-data-jpa") {
 		exclude group: 'org.apache.tomcat', module: 'tomcat-jdbc'
 	}
 	implementation 'org.hibernate:hibernate-java8:5.0.12.Final'
+	implementation 'org.modelmapper:modelmapper:2.3.7'
 
 	runtimeOnly 'org.springframework.boot:spring-boot-devtools'
 
@@ -38,10 +34,55 @@ dependencies {
 	testImplementation "org.spockframework:spock-core:1.1-groovy-2.4"
 	testImplementation "org.spockframework:spock-spring:1.1-groovy-2.4"
 	testImplementation "com.github.javafaker:javafaker:1.0.1"
-	testCompileOnly 'org.projectlombok:lombok:1.18.12'
-	testAnnotationProcessor 'org.projectlombok:lombok:1.18.12'
+	testImplementation 'org.modelmapper:modelmapper:2.3.7'
+	testCompileOnly 'org.projectlombok:lombok:1.18.+'
+	testAnnotationProcessor 'org.projectlombok:lombok:1.18.+'
 }
 
-test {
-	useJUnitPlatform()
+compileJava {
+	options.annotationProcessorPath = configurations.compileOnly
 }
+
+sourceSets {
+	testIntegration {
+		groovy {
+			compileClasspath += main.output + test.output
+			runtimeClasspath += main.output + test.output
+			srcDirs += ['src/test-integration/groovy']
+		}
+		resources.srcDir file('src/test-integration/resources')
+	}
+}
+
+idea {
+	module {
+		testSourceDirs += project.sourceSets.testIntegration.java.srcDirs
+		testSourceDirs += project.sourceSets.testIntegration.groovy.srcDirs
+		testSourceDirs += project.sourceSets.testIntegration.resources.srcDirs
+	}
+}
+
+configurations {
+	testIntegrationCompile.extendsFrom testImplementation
+	testIntegrationRuntime.extendsFrom testRuntime
+}
+
+task testIntegration(type: Test) {
+	testClassesDirs = sourceSets.testIntegration.output.classesDirs
+	classpath = sourceSets.testIntegration.runtimeClasspath
+	outputs.upToDateWhen { false }
+}
+
+check.dependsOn testIntegration as Test
+testIntegration.mustRunAfter test
+
+dockerCompose {
+	useComposeFiles = ['src/test-integration/resources/docker-compose.yml']
+	stopContainers = true
+	isRequiredBy testIntegration
+}
+
+testIntegration.doFirst {
+	dockerCompose.exposeAsSystemProperties(testIntegration)
+}
+
