@@ -15,6 +15,7 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -35,7 +36,10 @@ public class PlayerEntity {
     private GameEntity game;
 
     @OneToMany(mappedBy = "player", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<FrameEntity> frames;
+    @Builder.Default
+    private List<FrameEntity> frames = new ArrayList<>();
+
+    private String name;
 
     @Builder.Default
     private int currentFrame = 1;
