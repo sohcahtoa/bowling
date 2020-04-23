@@ -1,7 +1,6 @@
 package com.example.bowling
 
 import com.example.bowling.dto.Game
-import com.example.bowling.dto.Player
 
 import static com.example.bowling.ARandom.aRandom
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
@@ -20,10 +19,6 @@ class GameServiceSpec extends BaseIntegrationSpec {
         assert foundGame.players.size() == 2
         assert foundGame.players.get(0).name == players.get(0)
         assert foundGame.players.get(1).name == players.get(1)
-        for(Player player : foundGame.players) {
-            assert player.currentFrame == 1
-            assert player.currentScore == 0
-        }
     }
 
     def "will return a not found if game is not found"() {

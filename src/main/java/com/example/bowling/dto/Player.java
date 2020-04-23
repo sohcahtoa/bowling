@@ -17,5 +17,4 @@ public class Player {
     private UUID id;
     private List<FrameEntity> frames;
     private String name;
-    private int currentScore = 0;
 }

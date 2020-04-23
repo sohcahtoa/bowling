@@ -22,13 +22,11 @@ public class ScoringService {
                 }
                 score += MAX_PINS + frameEntities.get(i + 1).getRolls()[0];
 
-                frameEntity.setFrameScore(score);
-                playerEntity.setLastScoredFrame(playerEntity.getLastScoredFrame() + 1);
+                updatePlayerAndFrame(playerEntity, frameEntity, score);
             } else {
                 score += frameEntity.getRolls()[0] + frameEntity.getRolls()[1];
 
-                frameEntity.setFrameScore(score);
-                playerEntity.setLastScoredFrame(playerEntity.getLastScoredFrame() + 1);
+                updatePlayerAndFrame(playerEntity, frameEntity, score);
             }
         }
         return playerEntity;
@@ -36,5 +34,10 @@ public class ScoringService {
 
     private int getLastRecordedScore(List<FrameEntity> frameEntities, int lastScoredFrame) {
         return lastScoredFrame > 0 ? frameEntities.get(lastScoredFrame - 1).getFrameScore() : 0;
+    }
+
+    private void updatePlayerAndFrame(PlayerEntity playerEntity, FrameEntity frameEntity, int score) {
+        frameEntity.setFrameScore(score);
+        playerEntity.setLastScoredFrame(playerEntity.getLastScoredFrame() + 1);
     }
 }
