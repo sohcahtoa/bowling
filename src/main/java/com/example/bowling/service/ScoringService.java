@@ -17,7 +17,12 @@ public class ScoringService {
 
         for(int i = lastScoredFrame; i < frameEntities.size(); i++) {
             FrameEntity frameEntity = frameEntities.get(i);
-            if(frameEntity.isStrike()) {
+            if(isLastFrame(i)) {
+                for(int roll : frameEntity.getRolls()) {
+                    score += roll;
+                }
+                updatePlayerAndFrame(playerEntity, frameEntity, score);
+            } else if(frameEntity.isStrike()) {
                 if(!canCalculateStrike(frameEntities, i)) {
                     break;
                 }
@@ -64,5 +69,9 @@ public class ScoringService {
             int roll2 = frameEntities.get(index + 2).getRolls()[0];
             return roll1 + roll2;
         }
+    }
+
+    private boolean isLastFrame(int index) {
+        return index == 9;
     }
 }
