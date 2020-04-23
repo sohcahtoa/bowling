@@ -151,4 +151,64 @@ class ScoringServiceSpec extends Specification {
         "a spare and X" | [1, 9] as int[] | [10] as int[]   | [5, 1] as int[] | [1, 1] as int[] | 20             | 36             | 42             | 44             | 4
         "a X, X, X"     | [0, 1] as int[] | [10] as int[]   | [10] as int[]   | [10] as int[]   | 1              | 31             | null           | null           | 2
     }
+
+    @Unroll
+    def "can calculate last frame with #description"() {
+        given:
+        PlayerEntity playerEntity = aRandom.playerEntity().lastScoredFrame(9).build()
+        List<FrameEntity> frameEntities = playerEntity.getFrames()
+        9.times {
+            frameEntities.add(aRandom.frameEntity()
+                    .rolls([0, 0] as int[])
+                    .frameScore(0)
+                    .build()
+            )
+        }
+
+        and: "10th frame"
+        FrameEntity frame10 = aRandom.frameEntity()
+                .rolls(roll)
+                .build()
+        frameEntities.add(frame10)
+
+        when:
+        PlayerEntity result = scoringService.calculateScore(playerEntity)
+
+        then:
+        assert result.getFrames().get(9).frameScore == expectedFrame
+        assert result.lastScoredFrame == expectedLastFrame
+
+        where:
+        description     | roll                  | expectedFrame | expectedLastFrame
+        "X, X, X"       | [10, 10, 10] as int[] | 30            | 10
+        "X, /"          | [10, 8, 2] as int[]   | 20            | 10
+        "X and open"    | [10, 5, 3] as int[]   | 18            | 10
+        "/ and open"    | [5, 5, 4] as int[]    | 14            | 10
+        "/, X"          | [1, 9, 10] as int[]   | 20            | 10
+    }
+
+    def "can calculate a perfect game from beginning"() {
+        given:
+        PlayerEntity playerEntity = aRandom.playerEntity().build()
+        List<FrameEntity> frameEntities = playerEntity.getFrames()
+        9.times {
+            frameEntities.add(aRandom.frameEntity()
+                    .rolls([10] as int[])
+                    .build()
+            )
+        }
+
+        and: "10th frame"
+        FrameEntity frame10 = aRandom.frameEntity()
+                .rolls([10, 10, 10] as int[])
+                .build()
+        frameEntities.add(frame10)
+
+        when:
+        PlayerEntity result = scoringService.calculateScore(playerEntity)
+
+        then:
+        assert result.getFrames().get(9).frameScore == 300
+        assert result.lastScoredFrame == 10
+    }
 }
