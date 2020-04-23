@@ -1,4 +1,4 @@
-package com.example.bowling.apiModel;
+package com.example.bowling.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

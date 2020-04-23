@@ -2,9 +2,8 @@ package com.example.bowling.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -17,13 +16,12 @@ import javax.persistence.Table;
 import java.util.List;
 import java.util.UUID;
 
+@Data
 @Entity
 @Table(name = "game")
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Getter
-@Setter
 public class GameEntity {
     @Id
     @GeneratedValue

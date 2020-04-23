@@ -1,4 +1,4 @@
-package com.example.bowling.apiModel;
+package com.example.bowling.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,5 +14,5 @@ import java.util.UUID;
 public class Frame {
     private UUID id;
     private int[] rolls;
-    private int frameScore;
+    private Integer frameScore;
 }

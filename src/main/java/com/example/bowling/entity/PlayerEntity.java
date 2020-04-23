@@ -25,7 +25,6 @@ import java.util.UUID;
 @Table(name = "player")
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode
 public class PlayerEntity {
     @Id
     @GeneratedValue
@@ -42,8 +41,5 @@ public class PlayerEntity {
     private String name;
 
     @Builder.Default
-    private int currentFrame = 1;
-
-    @Builder.Default
-    private int currentScore = 0;
+    private int lastScoredFrame = 0;
 }

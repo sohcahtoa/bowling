@@ -3,7 +3,6 @@ package com.example.bowling.entity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.Column;
@@ -22,7 +21,6 @@ import static com.example.bowling.common.Constants.MAX_PINS;
 @Table(name = "frame")
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode
 public class FrameEntity {
     @Id
     @GeneratedValue
@@ -32,17 +30,22 @@ public class FrameEntity {
     @ManyToOne
     private PlayerEntity player;
 
-    private int frameNumber;
+    private int[] rolls;
 
-    private int firstRoll;
-
-    private int secondRoll;
+    @Builder.Default
+    private Integer frameScore = null;
 
     public boolean isStrike() {
-        return firstRoll == MAX_PINS;
+        if(rolls.length == 1) {
+            return rolls[0] == MAX_PINS;
+        }
+        return false;
     }
 
     public boolean isSpare() {
-        return firstRoll + secondRoll == MAX_PINS;
+        if(rolls.length == 2) {
+            return rolls[0] + rolls[1] == MAX_PINS;
+        }
+        return false;
     }
 }

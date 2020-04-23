@@ -1,6 +1,6 @@
 package com.example.bowling.controller;
 
-import com.example.bowling.apiModel.Game;
+import com.example.bowling.dto.Game;
 import com.example.bowling.service.GameService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;

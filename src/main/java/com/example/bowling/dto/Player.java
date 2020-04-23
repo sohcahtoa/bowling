@@ -1,4 +1,4 @@
-package com.example.bowling.apiModel;
+package com.example.bowling.dto;
 
 import com.example.bowling.entity.FrameEntity;
 import lombok.AllArgsConstructor;
@@ -17,6 +17,5 @@ public class Player {
     private UUID id;
     private List<FrameEntity> frames;
     private String name;
-    private int currentFrame = 1;
     private int currentScore = 0;
 }
