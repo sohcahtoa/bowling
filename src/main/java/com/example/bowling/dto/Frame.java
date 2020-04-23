@@ -5,12 +5,14 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.UUID;
+
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class Frame {
-    private int frameNumber;
-    private int firstRoll;
-    private int secondRoll;
+    private UUID id;
+    private int[] rolls;
+    private int frameScore;
 }

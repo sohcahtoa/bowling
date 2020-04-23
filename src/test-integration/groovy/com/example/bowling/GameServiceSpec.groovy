@@ -1,7 +1,7 @@
 package com.example.bowling
 
-import com.example.bowling.apiModel.Game
-import com.example.bowling.apiModel.Player
+import com.example.bowling.dto.Game
+import com.example.bowling.dto.Player
 
 import static com.example.bowling.ARandom.aRandom
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status

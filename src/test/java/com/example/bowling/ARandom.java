@@ -15,11 +15,15 @@ public class ARandom {
     @Delegate
     private Faker faker;
 
+    @Delegate
+    private RandomBuilderSupport randomBuilderSupport;
+
 
     public ARandom() {
         long seed = System.currentTimeMillis();
         random = new Random(seed);
         faker = Faker.instance(random);
+        randomBuilderSupport = new RandomBuilderSupport();
     }
 
     public static final ARandom aRandom = new ARandom();
