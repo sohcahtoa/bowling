@@ -75,7 +75,7 @@ class ScoringServiceSpec extends Specification {
     }
 
     @Unroll
-    def "can calculate #description"() {
+    def "for spares can calculate #description"() {
         given:
         FrameEntity frame1 = aRandom.frameEntity()
                 .rolls(roll1)
@@ -108,5 +108,47 @@ class ScoringServiceSpec extends Specification {
         "a spare"           | [1, 9] as int[]   | [9, 0] as int[]   | [1, 1] as int[]   | 19             | 28             | 30             | 3
         "multiple spares"   | [1, 9] as int[]   | [9, 1] as int[]   | [1, 1] as int[]   | 19             | 30             | 32             | 3
         "last frame spare"  | [1, 0] as int[]   | [5, 1] as int[]   | [9, 1] as int[]   | 1              | 7              | null           | 2
+    }
+
+    @Unroll
+    def "for strikes can calculate #description"() {
+        given:
+        FrameEntity frame1 = aRandom.frameEntity()
+                .rolls(roll1)
+                .build()
+        FrameEntity frame2 = aRandom.frameEntity()
+                .rolls(roll2)
+                .build()
+        FrameEntity frame3 = aRandom.frameEntity()
+                .rolls(roll3)
+                .build()
+        FrameEntity frame4 = aRandom.frameEntity()
+                .rolls(roll4)
+                .build()
+
+        PlayerEntity playerEntity = aRandom.playerEntity().build()
+
+        List<FrameEntity> frameEntities = playerEntity.getFrames()
+        frameEntities.add(frame1)
+        frameEntities.add(frame2)
+        frameEntities.add(frame3)
+        frameEntities.add(frame4)
+
+        when:
+        PlayerEntity result = scoringService.calculateScore(playerEntity)
+
+        then:
+        assert result.getFrames().get(0).frameScore == expectedFrame1
+        assert result.getFrames().get(1).frameScore == expectedFrame2
+        assert result.getFrames().get(2).frameScore == expectedFrame3
+        assert result.getFrames().get(3).frameScore == expectedFrame4
+        assert result.lastScoredFrame == expectedLastFrame
+
+        where:
+        description     | roll1           | roll2           | roll3           | roll4           | expectedFrame1 | expectedFrame2 | expectedFrame3 | expectedFrame4 | expectedLastFrame
+        "a X"           | [10] as int[]   | [9, 0] as int[] | [1, 1] as int[] | [1, 1] as int[] | 19             | 28             | 30             | 32             | 4
+        "a X, X, /"     | [4, 3] as int[] | [10] as int[]   | [10] as int[]   | [1, 9] as int[] | 7              | 28             | 48             | null           | 3
+        "a spare and X" | [1, 9] as int[] | [10] as int[]   | [5, 1] as int[] | [1, 1] as int[] | 20             | 36             | 42             | 44             | 4
+        "a X, X, X"     | [0, 1] as int[] | [10] as int[]   | [10] as int[]   | [10] as int[]   | 1              | 31             | null           | null           | 2
     }
 }
