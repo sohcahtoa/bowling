@@ -14,9 +14,18 @@ public class ScoringService {
         List<FrameEntity> frameEntities = playerEntity.getFrames();
         int lastScoredFrame = playerEntity.getLastScoredFrame();
         int score = getLastRecordedScore(frameEntities, lastScoredFrame);
+
         for(int i = lastScoredFrame; i < frameEntities.size(); i++) {
             FrameEntity frameEntity = frameEntities.get(i);
-            if(frameEntity.isSpare()) {
+            if(frameEntity.isStrike()) {
+                if(!canCalculateStrike(frameEntities, i)) {
+                    break;
+                }
+                int nextTwoRollsScore = calculateNextTwoRollsScore(frameEntities, i);
+                score += MAX_PINS + nextTwoRollsScore;
+
+                updatePlayerAndFrame(playerEntity, frameEntity, score);
+            } else if(frameEntity.isSpare()) {
                 if(i + 1 >= frameEntities.size()) {
                     break;
                 }
@@ -39,5 +48,21 @@ public class ScoringService {
     private void updatePlayerAndFrame(PlayerEntity playerEntity, FrameEntity frameEntity, int score) {
         frameEntity.setFrameScore(score);
         playerEntity.setLastScoredFrame(playerEntity.getLastScoredFrame() + 1);
+    }
+
+    private boolean canCalculateStrike(List<FrameEntity> frameEntities, int index) {
+        return (index + 1 < frameEntities.size() && !frameEntities.get(index + 1).isStrike())
+                || (index + 2 < frameEntities.size());
+    }
+
+    private int calculateNextTwoRollsScore(List<FrameEntity> frameEntities, int index) {
+        if(!frameEntities.get(index + 1).isStrike()) {
+            int[] rolls = frameEntities.get(index + 1).getRolls();
+            return rolls[0] + rolls[1];
+        } else {
+            int roll1 = frameEntities.get(index + 1).getRolls()[0];
+            int roll2 = frameEntities.get(index + 2).getRolls()[0];
+            return roll1 + roll2;
+        }
     }
 }
