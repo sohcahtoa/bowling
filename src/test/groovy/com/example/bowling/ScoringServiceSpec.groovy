@@ -73,4 +73,81 @@ class ScoringServiceSpec extends Specification {
         assert result.getFrames().get(2).frameScore == 18
         assert result.lastScoredFrame == 3
     }
+
+    def "can calculate a spare"() {
+        given:
+        FrameEntity frameSpare = aRandom.frameEntity()
+                .rolls([1, 9] as int[])
+                .build()
+        FrameEntity frame2 = aRandom.frameEntity()
+                .rolls([9,0] as int[])
+                .build()
+
+        PlayerEntity playerEntity = aRandom.playerEntity().build()
+
+        List<FrameEntity> frameEntities = playerEntity.getFrames()
+        frameEntities.add(frameSpare)
+        frameEntities.add(frame2)
+
+        when:
+        PlayerEntity result = scoringService.calculateScore(playerEntity)
+
+        then:
+        assert result.getFrames().get(0).frameScore == 19
+        assert result.getFrames().get(1).frameScore == 28
+        assert result.lastScoredFrame == 2
+    }
+
+    def "can calculate a multiple spares in a row"() {
+        given:
+        FrameEntity frameSpare1 = aRandom.frameEntity()
+                .rolls([1, 9] as int[])
+                .build()
+        FrameEntity frameSpare2 = aRandom.frameEntity()
+                .rolls([9,1] as int[])
+                .build()
+        FrameEntity frame3 = aRandom.frameEntity()
+                .rolls([5,2] as int[])
+                .build()
+
+        PlayerEntity playerEntity = aRandom.playerEntity().build()
+
+        List<FrameEntity> frameEntities = playerEntity.getFrames()
+        frameEntities.add(frameSpare1)
+        frameEntities.add(frameSpare2)
+        frameEntities.add(frame3)
+
+        when:
+        PlayerEntity result = scoringService.calculateScore(playerEntity)
+
+        then:
+        assert result.getFrames().get(0).frameScore == 19
+        assert result.getFrames().get(1).frameScore == 34
+        assert result.getFrames().get(2).frameScore == 41
+        assert result.lastScoredFrame == 3
+    }
+
+    def "will not calculate spare if there is not another frame after it"() {
+        given:
+        FrameEntity frame1 = aRandom.frameEntity()
+                .rolls([1, 1] as int[])
+                .build()
+        FrameEntity frameSpare = aRandom.frameEntity()
+                .rolls([9,1] as int[])
+                .build()
+
+        PlayerEntity playerEntity = aRandom.playerEntity().build()
+
+        List<FrameEntity> frameEntities = playerEntity.getFrames()
+        frameEntities.add(frame1)
+        frameEntities.add(frameSpare)
+
+        when:
+        PlayerEntity result = scoringService.calculateScore(playerEntity)
+
+        then:
+        assert result.getFrames().get(0).frameScore == 2
+        assert result.getFrames().get(1).frameScore == null
+        assert result.lastScoredFrame == 1
+    }
 }
