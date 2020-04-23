@@ -74,80 +74,39 @@ class ScoringServiceSpec extends Specification {
         assert result.lastScoredFrame == 3
     }
 
-    def "can calculate a spare"() {
-        given:
-        FrameEntity frameSpare = aRandom.frameEntity()
-                .rolls([1, 9] as int[])
-                .build()
-        FrameEntity frame2 = aRandom.frameEntity()
-                .rolls([9,0] as int[])
-                .build()
-
-        PlayerEntity playerEntity = aRandom.playerEntity().build()
-
-        List<FrameEntity> frameEntities = playerEntity.getFrames()
-        frameEntities.add(frameSpare)
-        frameEntities.add(frame2)
-
-        when:
-        PlayerEntity result = scoringService.calculateScore(playerEntity)
-
-        then:
-        assert result.getFrames().get(0).frameScore == 19
-        assert result.getFrames().get(1).frameScore == 28
-        assert result.lastScoredFrame == 2
-    }
-
-    def "can calculate a multiple spares in a row"() {
-        given:
-        FrameEntity frameSpare1 = aRandom.frameEntity()
-                .rolls([1, 9] as int[])
-                .build()
-        FrameEntity frameSpare2 = aRandom.frameEntity()
-                .rolls([9,1] as int[])
-                .build()
-        FrameEntity frame3 = aRandom.frameEntity()
-                .rolls([5,2] as int[])
-                .build()
-
-        PlayerEntity playerEntity = aRandom.playerEntity().build()
-
-        List<FrameEntity> frameEntities = playerEntity.getFrames()
-        frameEntities.add(frameSpare1)
-        frameEntities.add(frameSpare2)
-        frameEntities.add(frame3)
-
-        when:
-        PlayerEntity result = scoringService.calculateScore(playerEntity)
-
-        then:
-        assert result.getFrames().get(0).frameScore == 19
-        assert result.getFrames().get(1).frameScore == 34
-        assert result.getFrames().get(2).frameScore == 41
-        assert result.lastScoredFrame == 3
-    }
-
-    def "will not calculate spare if there is not another frame after it"() {
+    @Unroll
+    def "can calculate #description"() {
         given:
         FrameEntity frame1 = aRandom.frameEntity()
-                .rolls([1, 1] as int[])
+                .rolls(roll1)
                 .build()
-        FrameEntity frameSpare = aRandom.frameEntity()
-                .rolls([9,1] as int[])
+        FrameEntity frame2 = aRandom.frameEntity()
+                .rolls(roll2)
+                .build()
+        FrameEntity frame3 = aRandom.frameEntity()
+                .rolls(roll3)
                 .build()
 
         PlayerEntity playerEntity = aRandom.playerEntity().build()
 
         List<FrameEntity> frameEntities = playerEntity.getFrames()
         frameEntities.add(frame1)
-        frameEntities.add(frameSpare)
+        frameEntities.add(frame2)
+        frameEntities.add(frame3)
 
         when:
         PlayerEntity result = scoringService.calculateScore(playerEntity)
 
         then:
-        assert result.getFrames().get(0).frameScore == 2
-        assert result.getFrames().get(1).frameScore == null
-        assert result.lastScoredFrame == 1
+        assert result.getFrames().get(0).frameScore == expectedFrame1
+        assert result.getFrames().get(1).frameScore == expectedFrame2
+        assert result.getFrames().get(2).frameScore == expectedFrame3
+        assert result.lastScoredFrame == expectedLastFrame
+
+        where:
+        description         | roll1             | roll2             | roll3             | expectedFrame1 | expectedFrame2 | expectedFrame3 | expectedLastFrame
+        "a spare"           | [1, 9] as int[]   | [9, 0] as int[]   | [1, 1] as int[]   | 19             | 28             | 30             | 3
+        "multiple spares"   | [1, 9] as int[]   | [9, 1] as int[]   | [1, 1] as int[]   | 19             | 30             | 32             | 3
+        "last frame spare"  | [1, 0] as int[]   | [5, 1] as int[]   | [9, 1] as int[]   | 1              | 7              | null           | 2
     }
 }
