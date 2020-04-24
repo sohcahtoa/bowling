@@ -40,7 +40,7 @@ public class ScoringService {
 
     private void assertRollsValid(int[] rolls, int frameNumber) {
         if(frameNumber != LAST_FRAME) {
-            if(rolls.length == 0 || rolls.length >= 3 || (rolls.length == 1 && rolls[0] != MAX_PINS)) {
+            if(isValidNumberOfRolls(rolls)) {
                 throw new InvalidFrameException("Provided incorrect number of rolls.");
             }
             int frameScore = 0;
@@ -71,6 +71,13 @@ public class ScoringService {
                 throw new InvalidFrameException("Provided incorrect roll values.");
             }
         }
+    }
+
+    private boolean isValidNumberOfRolls(int[] rolls) {
+        return rolls.length == 0 ||
+                rolls.length >= 3 ||
+                (rolls.length == 1 && rolls[0] != MAX_PINS) ||
+                (rolls[0] == MAX_PINS && rolls.length != 1);
     }
 
     private boolean isClosedFrame(int[] rolls) {
