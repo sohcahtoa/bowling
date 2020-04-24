@@ -48,4 +48,50 @@ class GameServiceSpec extends BaseIntegrationSpec {
         assert result.frames.get(0).frameScore == 9
         assert result.lastScoredFrame == 1
     }
+
+    def "can play a full game"() {
+        given:
+        List<String> players = aRandom.playerNames(1)
+        Game createdGame = responseToClass(createGame(players), Game.class)
+        UUID playerId = createdGame.players.get(0).id
+        List<Frame> frames = new ArrayList<>()
+        frames.add(Frame.builder()
+                .rolls([4, 5] as int[])
+                .frameNumber(1)
+                .build())
+        frames.add(Frame.builder()
+                .rolls([4,6] as int[])
+                .frameNumber(2)
+                .build())
+        for(int i = 3; i <= 9; i++) {
+            frames.add(Frame.builder()
+                    .rolls([10] as int[])
+                    .frameNumber(i)
+                    .build())
+        }
+        frames.add(Frame.builder()
+                .rolls([10,10,10] as int[])
+                .frameNumber(10)
+                .build())
+
+        when:
+        Player result = null
+        for(Frame frame : frames) {
+            result = responseToClass(addFrame(playerId, frame), Player.class)
+        }
+
+        then:
+        assert result.frames.size() == 10
+        assert result.frames.get(0).frameScore == 9
+        assert result.frames.get(1).frameScore == 29
+        assert result.frames.get(2).frameScore == 59
+        assert result.frames.get(3).frameScore == 89
+        assert result.frames.get(4).frameScore == 119
+        assert result.frames.get(5).frameScore == 149
+        assert result.frames.get(6).frameScore == 179
+        assert result.frames.get(7).frameScore == 209
+        assert result.frames.get(8).frameScore == 239
+        assert result.frames.get(9).frameScore == 269
+        assert result.lastScoredFrame == 10
+    }
 }
