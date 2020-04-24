@@ -3,7 +3,6 @@ package com.example.bowling.entity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.CascadeType;
@@ -14,6 +13,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +34,7 @@ public class PlayerEntity {
     @ManyToOne
     private GameEntity game;
 
-    @OneToMany(mappedBy = "player", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "player", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @Builder.Default
     private List<FrameEntity> frames = new ArrayList<>();
 

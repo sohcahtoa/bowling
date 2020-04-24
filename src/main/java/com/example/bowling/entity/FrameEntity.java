@@ -50,6 +50,8 @@ public class FrameEntity {
     @Builder.Default
     private Integer frameScore = null;
 
+    private int frameNumber;
+
     public boolean isStrike() {
         if(rolls.length == 1) {
             return rolls[0] == MAX_PINS;

@@ -14,5 +14,6 @@ import java.util.UUID;
 public class Frame {
     private UUID id;
     private int[] rolls;
+    private int frameNumber;
     private Integer frameScore;
 }

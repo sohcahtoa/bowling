@@ -29,11 +29,11 @@ class ScoringServiceSpec extends Specification {
                 .build()
 
         when:
-        PlayerEntity result = scoringService.calculateScore(playerEntity)
+        scoringService.calculateScore(playerEntity)
 
         then:
-        assert result.getFrames().get(0).frameScore == expectedScore
-        assert result.lastScoredFrame == 1
+        assert playerEntity.getFrames().get(0).frameScore == expectedScore
+        assert playerEntity.lastScoredFrame == 1
 
         where:
         firstRoll   | secondRoll    | expectedScore
@@ -67,11 +67,11 @@ class ScoringServiceSpec extends Specification {
         frameEntities.add(frame3)
 
         when:
-        PlayerEntity result = scoringService.calculateScore(playerEntity)
+        scoringService.calculateScore(playerEntity)
 
         then:
-        assert result.getFrames().get(2).frameScore == 18
-        assert result.lastScoredFrame == 3
+        assert playerEntity.getFrames().get(2).frameScore == 18
+        assert playerEntity.lastScoredFrame == 3
     }
 
     @Unroll
@@ -95,13 +95,13 @@ class ScoringServiceSpec extends Specification {
         frameEntities.add(frame3)
 
         when:
-        PlayerEntity result = scoringService.calculateScore(playerEntity)
+        scoringService.calculateScore(playerEntity)
 
         then:
-        assert result.getFrames().get(0).frameScore == expectedFrame1
-        assert result.getFrames().get(1).frameScore == expectedFrame2
-        assert result.getFrames().get(2).frameScore == expectedFrame3
-        assert result.lastScoredFrame == expectedLastFrame
+        assert playerEntity.getFrames().get(0).frameScore == expectedFrame1
+        assert playerEntity.getFrames().get(1).frameScore == expectedFrame2
+        assert playerEntity.getFrames().get(2).frameScore == expectedFrame3
+        assert playerEntity.lastScoredFrame == expectedLastFrame
 
         where:
         description         | roll1             | roll2             | roll3             | expectedFrame1 | expectedFrame2 | expectedFrame3 | expectedLastFrame
@@ -135,14 +135,14 @@ class ScoringServiceSpec extends Specification {
         frameEntities.add(frame4)
 
         when:
-        PlayerEntity result = scoringService.calculateScore(playerEntity)
+        scoringService.calculateScore(playerEntity)
 
         then:
-        assert result.getFrames().get(0).frameScore == expectedFrame1
-        assert result.getFrames().get(1).frameScore == expectedFrame2
-        assert result.getFrames().get(2).frameScore == expectedFrame3
-        assert result.getFrames().get(3).frameScore == expectedFrame4
-        assert result.lastScoredFrame == expectedLastFrame
+        assert playerEntity.getFrames().get(0).frameScore == expectedFrame1
+        assert playerEntity.getFrames().get(1).frameScore == expectedFrame2
+        assert playerEntity.getFrames().get(2).frameScore == expectedFrame3
+        assert playerEntity.getFrames().get(3).frameScore == expectedFrame4
+        assert playerEntity.lastScoredFrame == expectedLastFrame
 
         where:
         description     | roll1           | roll2           | roll3           | roll4           | expectedFrame1 | expectedFrame2 | expectedFrame3 | expectedFrame4 | expectedLastFrame
@@ -172,11 +172,11 @@ class ScoringServiceSpec extends Specification {
         frameEntities.add(frame10)
 
         when:
-        PlayerEntity result = scoringService.calculateScore(playerEntity)
+        scoringService.calculateScore(playerEntity)
 
         then:
-        assert result.getFrames().get(9).frameScore == expectedFrame
-        assert result.lastScoredFrame == expectedLastFrame
+        assert playerEntity.getFrames().get(9).frameScore == expectedFrame
+        assert playerEntity.lastScoredFrame == expectedLastFrame
 
         where:
         description     | roll                  | expectedFrame | expectedLastFrame
@@ -205,10 +205,10 @@ class ScoringServiceSpec extends Specification {
         frameEntities.add(frame10)
 
         when:
-        PlayerEntity result = scoringService.calculateScore(playerEntity)
+        scoringService.calculateScore(playerEntity)
 
         then:
-        assert result.getFrames().get(9).frameScore == 300
-        assert result.lastScoredFrame == 10
+        assert playerEntity.getFrames().get(9).frameScore == 300
+        assert playerEntity.lastScoredFrame == 10
     }
 }

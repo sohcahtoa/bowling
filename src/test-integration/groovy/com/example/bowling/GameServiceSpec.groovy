@@ -36,7 +36,7 @@ class GameServiceSpec extends BaseIntegrationSpec {
         List<String> players = aRandom.playerNames(2)
         Game createdGame = responseToClass(createGame(players), Game.class)
         UUID playerId = createdGame.players.get(0).id
-        Frame frame = aRandom.frame()
+        Frame frame = Frame.builder()
             .rolls([4, 5] as int[])
             .build()
 

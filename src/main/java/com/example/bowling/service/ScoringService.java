@@ -1,14 +1,11 @@
 package com.example.bowling.service;
 
-import com.example.bowling.dto.Frame;
 import com.example.bowling.entity.FrameEntity;
 import com.example.bowling.entity.PlayerEntity;
 import com.example.bowling.repository.PlayerRepository;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.EntityExistsException;
 import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.UUID;
@@ -28,6 +25,7 @@ public class ScoringService {
     }
 
     private void addFrameToPlayer(PlayerEntity playerEntity, FrameEntity frameEntity) {
+        frameEntity.setPlayer(playerEntity);
         List<FrameEntity> frameEntities = playerEntity.getFrames();
         frameEntities.add(frameEntity);
         playerEntity.setFrames(frameEntities);
