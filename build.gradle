@@ -26,6 +26,7 @@ dependencies {
 	}
 	implementation 'org.hibernate:hibernate-java8:5.0.12.Final'
 	implementation 'org.modelmapper:modelmapper:2.3.7'
+	implementation 'com.vladmihalcea:hibernate-types-5:2.9.8'
 
 	runtimeOnly 'org.springframework.boot:spring-boot-devtools'
 
