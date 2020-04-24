@@ -19,7 +19,7 @@ public class RestControllerExceptionHandler extends ResponseEntityExceptionHandl
         // Nothing to do
     }
 
-    @ExceptionHandler(InvalidFrameNumberException.class)
+    @ExceptionHandler(InvalidFrameException.class)
     protected ResponseEntity<Object> handleBadRequest(RuntimeException ex, WebRequest request) {
         return handleExceptionInternal(ex, ex.getMessage(),
                 new HttpHeaders(), HttpStatus.BAD_REQUEST, request);

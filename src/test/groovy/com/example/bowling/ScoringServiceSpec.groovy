@@ -2,7 +2,7 @@ package com.example.bowling
 
 import com.example.bowling.entity.FrameEntity
 import com.example.bowling.entity.PlayerEntity
-import com.example.bowling.exception.InvalidFrameNumberException
+import com.example.bowling.exception.InvalidFrameException
 import com.example.bowling.repository.PlayerRepository
 import com.example.bowling.service.ScoringService
 import spock.lang.Specification
@@ -247,7 +247,7 @@ class ScoringServiceSpec extends Specification {
         scoringService.handleAddFrame(playerEntity.id, frameEntity)
 
         then:
-        thrown(InvalidFrameNumberException)
+        thrown(InvalidFrameException)
 
         where:
         description                 | notValidFrameNumber
