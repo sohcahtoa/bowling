@@ -2,17 +2,22 @@ package com.example.bowling
 
 import com.example.bowling.entity.FrameEntity
 import com.example.bowling.entity.PlayerEntity
+import com.example.bowling.repository.PlayerRepository
 import com.example.bowling.service.ScoringService
 import spock.lang.Specification
 import spock.lang.Unroll
 
-import static com.example.bowling.ARandom.aRandom;
+import javax.persistence.EntityNotFoundException
+
+import static com.example.bowling.ARandom.aRandom
 
 class ScoringServiceSpec extends Specification {
-    private ScoringService scoringService
+    ScoringService scoringService
+    PlayerRepository playerRepository
 
     def setup() {
-        scoringService = new ScoringService()
+        playerRepository = Mock(PlayerRepository)
+        scoringService = new ScoringService(playerRepository)
     }
 
     @Unroll
@@ -210,5 +215,20 @@ class ScoringServiceSpec extends Specification {
         then:
         assert playerEntity.getFrames().get(9).frameScore == 300
         assert playerEntity.lastScoredFrame == 10
+    }
+
+    def "will throw an EntityNotFoundException when player not found"() {
+        given:
+        playerRepository.findById(_) >> Optional.empty()
+        FrameEntity frameEntity = aRandom.frameEntity()
+                .frameNumber(1)
+                .rolls([10] as int[])
+                .build()
+
+        when:
+        scoringService.handleAddFrame(aRandom.uuid(), frameEntity)
+
+        then:
+        thrown(EntityNotFoundException)
     }
 }
