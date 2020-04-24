@@ -234,7 +234,7 @@ class ScoringServiceSpec extends Specification {
     }
 
     @Unroll
-    def "should throw an exception when frameNumber is #description"() {
+    def "should throw an InvalidFrameException when frameNumber is #description"() {
         given:
         PlayerEntity playerEntity = aRandom.playerEntity().build()
         playerRepository.findById(playerEntity.id) >> Optional.of(playerEntity)
@@ -253,5 +253,71 @@ class ScoringServiceSpec extends Specification {
         description                 | notValidFrameNumber
         "null"                      | 0
         "not the next frameNumber"  | 3
+    }
+
+    @Unroll
+    def "should throw an InvalidFrameException when rolls #description"() {
+        given:
+        PlayerEntity playerEntity = aRandom.playerEntity().build()
+        playerRepository.findById(playerEntity.id) >> Optional.of(playerEntity)
+
+        FrameEntity frameEntity = aRandom.frameEntity()
+                .frameNumber(1)
+                .rolls(inValidRoll)
+                .build()
+
+        when:
+        scoringService.handleAddFrame(playerEntity.id, frameEntity)
+
+        then:
+        thrown(InvalidFrameException)
+
+        where:
+        description                         | inValidRoll
+        "has a negative number"             | [-1, 8] as int[]
+        "has a number > 10"                 | [11, 12] as int[]
+        "is length 1 and < 10"              | [4] as int[]
+        "is length > 2 and not last frame"  | [1, 2, 3] as int[]
+        "score is > 10"                     | [9, 5] as int[]
+    }
+
+    @Unroll
+    def "for last frame should throw an InvalidFrameException when rolls #description"() {
+        given:
+        PlayerEntity playerEntity = aRandom.playerEntity().build()
+        List<FrameEntity> frameEntities = playerEntity.getFrames()
+        int frameNumber = 1
+        9.times {
+            frameEntities.add(aRandom.frameEntity()
+                    .rolls([0, 0] as int[])
+                    .frameScore(0)
+                    .frameNumber(frameNumber)
+                    .build()
+            )
+            frameNumber++
+        }
+        playerRepository.findById(playerEntity.id) >> Optional.of(playerEntity)
+
+        FrameEntity frame10 = aRandom.frameEntity()
+                .frameNumber(10)
+                .rolls(inValidRoll)
+                .build()
+
+        when:
+        scoringService.handleAddFrame(playerEntity.id, frame10)
+
+        then:
+        thrown(InvalidFrameException)
+
+        where:
+        description                         | inValidRoll
+        "has a negative number"             | [-1, 8] as int[]
+        "has a number > 10"                 | [11, 12] as int[]
+        "is length 1"                       | [10] as int[]
+        "is length > 3 and not X or /"      | [1, 2, 3] as int[]
+        "is X and not length 3"             | [10, 1] as int[]
+        "is ? and not length 3"             | [9, 1] as int[]
+        "is length 2 and score > 10"        | [9, 9] as int[]
+        "is length 3 and score > 30"        | [10, 10, 11] as int[]
     }
 }
