@@ -7,7 +7,7 @@ import com.example.bowling.dto.Player
 import static com.example.bowling.ARandom.aRandom
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
-class GameServiceSpec extends BaseIntegrationSpec {
+class GameServiceIntSpec extends BaseIntegrationSpec {
 
     def "can create a game with multiple players"() {
         given:
