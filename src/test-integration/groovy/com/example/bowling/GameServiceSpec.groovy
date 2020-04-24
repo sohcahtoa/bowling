@@ -38,6 +38,7 @@ class GameServiceSpec extends BaseIntegrationSpec {
         UUID playerId = createdGame.players.get(0).id
         Frame frame = Frame.builder()
             .rolls([4, 5] as int[])
+            .frameNumber(1)
             .build()
 
         when:
@@ -47,6 +48,32 @@ class GameServiceSpec extends BaseIntegrationSpec {
         assert result.frames.size() == 1
         assert result.frames.get(0).frameScore == 9
         assert result.lastScoredFrame == 1
+    }
+
+    def "will return a not found if player is not found"() {
+        when:
+        Frame frame = Frame.builder()
+                .rolls([4, 5] as int[])
+                .frameNumber(1)
+                .build()
+        addFrame(aRandom.uuid(), frame, status().isNotFound())
+
+        then:
+        noExceptionThrown()
+    }
+
+    def "will return a bad request if frame number is not passed"() {
+        when:
+        List<String> players = aRandom.playerNames(2)
+        Game createdGame = responseToClass(createGame(players), Game.class)
+        UUID playerId = createdGame.players.get(0).id
+        Frame frame = Frame.builder()
+                .rolls([4, 5] as int[])
+                .build()
+        addFrame(playerId, frame, status().isBadRequest())
+
+        then:
+        noExceptionThrown()
     }
 
     def "can play a full game"() {

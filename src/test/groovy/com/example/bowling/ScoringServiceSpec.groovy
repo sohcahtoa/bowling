@@ -2,6 +2,7 @@ package com.example.bowling
 
 import com.example.bowling.entity.FrameEntity
 import com.example.bowling.entity.PlayerEntity
+import com.example.bowling.exception.InvalidFrameNumberException
 import com.example.bowling.repository.PlayerRepository
 import com.example.bowling.service.ScoringService
 import spock.lang.Specification
@@ -230,5 +231,27 @@ class ScoringServiceSpec extends Specification {
 
         then:
         thrown(EntityNotFoundException)
+    }
+
+    @Unroll
+    def "should throw an exception when frameNumber is #description"() {
+        given:
+        PlayerEntity playerEntity = aRandom.playerEntity().build()
+        playerRepository.findById(playerEntity.id) >> Optional.of(playerEntity)
+
+        FrameEntity frameEntity = aRandom.frameEntity()
+                .frameNumber(notValidFrameNumber)
+                .build()
+
+        when:
+        scoringService.handleAddFrame(playerEntity.id, frameEntity)
+
+        then:
+        thrown(InvalidFrameNumberException)
+
+        where:
+        description                 | notValidFrameNumber
+        "null"                      | 0
+        "not the next frameNumber"  | 3
     }
 }
