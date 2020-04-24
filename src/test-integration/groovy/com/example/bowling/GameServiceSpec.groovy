@@ -1,6 +1,8 @@
 package com.example.bowling
 
+import com.example.bowling.dto.Frame
 import com.example.bowling.dto.Game
+import com.example.bowling.dto.Player
 
 import static com.example.bowling.ARandom.aRandom
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
@@ -27,5 +29,23 @@ class GameServiceSpec extends BaseIntegrationSpec {
 
         then:
         noExceptionThrown()
+    }
+
+    def "can add a frame for a player"() {
+        given:
+        List<String> players = aRandom.playerNames(2)
+        Game createdGame = responseToClass(createGame(players), Game.class)
+        UUID playerId = createdGame.players.get(0).id
+        Frame frame = aRandom.frame()
+            .rolls([4, 5] as int[])
+            .build()
+
+        when:
+        Player result = responseToClass(addFrame(playerId, frame), Player.class)
+
+        then:
+        assert result.frames.size() == 1
+        assert result.frames.get(0).frameScore == 9
+        assert result.lastScoredFrame == 1
     }
 }

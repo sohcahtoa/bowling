@@ -1,5 +1,6 @@
 package com.example.bowling
 
+import com.example.bowling.dto.Frame
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
@@ -31,7 +32,7 @@ class BaseIntegrationSpec extends Specification {
     }
 
     protected <T> T responseToClass(MockHttpServletResponse response, Class<T> clazz) {
-        return objectMapper.readValue(response.getContentAsByteArray(), clazz)
+        return objectMapper.readValue(response.getContentAsString(), clazz)
     }
 
     protected MockHttpServletResponse createGame(List<String> players, ResultMatcher expectedStatus = status().isCreated()) {
@@ -48,6 +49,15 @@ class BaseIntegrationSpec extends Specification {
                 get(baseUri() + "/game/${gameId}")
                         .accept(APPLICATION_JSON)
                         .contentType(APPLICATION_JSON))
+                .andDo(print()).andExpect(expectedStatus).andReturn().getResponse()
+    }
+
+    protected MockHttpServletResponse addFrame(UUID playerId, Frame frame, ResultMatcher expectedStatus = status().isOk()) {
+        return mvc.perform(
+                post(baseUri() + "/player/${playerId}/frame")
+                        .accept(APPLICATION_JSON)
+                        .contentType(APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(frame)))
                 .andDo(print()).andExpect(expectedStatus).andReturn().getResponse()
     }
 }
