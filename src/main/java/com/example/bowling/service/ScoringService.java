@@ -11,6 +11,7 @@ import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.UUID;
 
+import static com.example.bowling.common.Constants.LAST_FRAME;
 import static com.example.bowling.common.Constants.MAX_PINS;
 
 @Service
@@ -27,9 +28,57 @@ public class ScoringService {
     }
 
     private void validateFrame(FrameEntity frameEntity, PlayerEntity playerEntity) {
-        if(frameEntity.getFrameNumber() <= 0 || frameEntity.getFrameNumber() != playerEntity.getFrames().size() + 1) {
+        assertFrameNumberValid(frameEntity.getFrameNumber(),playerEntity.getFrames().size() + 1);
+        assertRollsValid(frameEntity.getRolls(), frameEntity.getFrameNumber());
+    }
+
+    private void assertFrameNumberValid(int frameNumber, int currentFrameNumber) {
+        if(frameNumber <= 0 || frameNumber != currentFrameNumber) {
             throw new InvalidFrameException("Frame Number was incorrect.");
         }
+    }
+
+    private void assertRollsValid(int[] rolls, int frameNumber) {
+        if(frameNumber != LAST_FRAME) {
+            if(rolls.length == 0 || rolls.length >= 3 || (rolls.length == 1 && rolls[0] != MAX_PINS)) {
+                throw new InvalidFrameException("Provided incorrect number of rolls.");
+            }
+            int frameScore = 0;
+            for(int roll : rolls) {
+                frameScore += roll;
+                if(roll < 0 || roll > MAX_PINS) {
+                    throw new InvalidFrameException("Provided incorrect roll values.");
+                }
+            }
+            if(frameScore > MAX_PINS) {
+                throw new InvalidFrameException("Provided incorrect roll values.");
+            }
+        } else {
+            if(!(rolls.length == 2 || rolls.length == 3)) {
+                throw new InvalidFrameException("Provided incorrect number of rolls.");
+            }
+            if(!(isClosedFrame(rolls) && rolls.length == 3)) {
+                throw new InvalidFrameException("Provided incorrect number of rolls.");
+            }
+            int frameScore = 0;
+            for(int roll : rolls) {
+                frameScore += roll;
+                if(roll < 0 || roll > MAX_PINS) {
+                    throw new InvalidFrameException("Provided incorrect roll values.");
+                }
+            }
+            if(isLastFrameScoreValid(frameScore, rolls.length)) {
+                throw new InvalidFrameException("Provided incorrect roll values.");
+            }
+        }
+    }
+
+    private boolean isClosedFrame(int[] rolls) {
+        return rolls[0] == MAX_PINS || rolls[0] + rolls[1] == MAX_PINS;
+    }
+
+    private boolean isLastFrameScoreValid(int frameScore, int numRolls) {
+        return frameScore > MAX_PINS && numRolls == 2;
     }
 
     private void addFrameToPlayer(PlayerEntity playerEntity, FrameEntity frameEntity) {
