@@ -2,6 +2,7 @@ package com.example.bowling.service;
 
 import com.example.bowling.entity.FrameEntity;
 import com.example.bowling.entity.PlayerEntity;
+import com.example.bowling.exception.InvalidFrameNumberException;
 import com.example.bowling.repository.PlayerRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,9 +20,16 @@ public class ScoringService {
 
     public PlayerEntity handleAddFrame(UUID playerId, FrameEntity frameEntity) {
         PlayerEntity playerEntity = playerRepository.findById(playerId).orElseThrow(EntityNotFoundException::new);
+        validateFrame(frameEntity, playerEntity);
         addFrameToPlayer(playerEntity, frameEntity);
         calculateScore(playerEntity);
         return playerRepository.save(playerEntity);
+    }
+
+    private void validateFrame(FrameEntity frameEntity, PlayerEntity playerEntity) {
+        if(frameEntity.getFrameNumber() <= 0 || frameEntity.getFrameNumber() != playerEntity.getFrames().size() + 1) {
+            throw new InvalidFrameNumberException("Frame Number was incorrect.");
+        }
     }
 
     private void addFrameToPlayer(PlayerEntity playerEntity, FrameEntity frameEntity) {
