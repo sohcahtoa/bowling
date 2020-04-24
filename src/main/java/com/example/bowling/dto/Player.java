@@ -15,6 +15,7 @@ import java.util.UUID;
 @AllArgsConstructor
 public class Player {
     private UUID id;
-    private List<FrameEntity> frames;
+    private List<Frame> frames;
     private String name;
+    private int lastScoredFrame;
 }

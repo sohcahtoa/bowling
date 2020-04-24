@@ -1,16 +1,39 @@
 package com.example.bowling.service;
 
+import com.example.bowling.dto.Frame;
 import com.example.bowling.entity.FrameEntity;
 import com.example.bowling.entity.PlayerEntity;
+import com.example.bowling.repository.PlayerRepository;
+import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityExistsException;
+import javax.persistence.EntityNotFoundException;
 import java.util.List;
+import java.util.UUID;
 
 import static com.example.bowling.common.Constants.MAX_PINS;
 
 @Service
+@RequiredArgsConstructor
 public class ScoringService {
-    public PlayerEntity calculateScore(PlayerEntity playerEntity) {
+    private final PlayerRepository playerRepository;
+
+    public PlayerEntity handleAddFrame(UUID playerId, FrameEntity frameEntity) {
+        PlayerEntity playerEntity = playerRepository.findById(playerId).orElseThrow(EntityNotFoundException::new);
+        addFrameToPlayer(playerEntity, frameEntity);
+        calculateScore(playerEntity);
+        return playerRepository.save(playerEntity);
+    }
+
+    private void addFrameToPlayer(PlayerEntity playerEntity, FrameEntity frameEntity) {
+        List<FrameEntity> frameEntities = playerEntity.getFrames();
+        frameEntities.add(frameEntity);
+        playerEntity.setFrames(frameEntities);
+    }
+
+    private void calculateScore(PlayerEntity playerEntity) {
         List<FrameEntity> frameEntities = playerEntity.getFrames();
         int lastScoredFrame = playerEntity.getLastScoredFrame();
         int score = getLastRecordedScore(frameEntities, lastScoredFrame);
@@ -43,7 +66,6 @@ public class ScoringService {
                 updatePlayerAndFrame(playerEntity, frameEntity, score);
             }
         }
-        return playerEntity;
     }
 
     private int getLastRecordedScore(List<FrameEntity> frameEntities, int lastScoredFrame) {

@@ -1,7 +1,11 @@
 package com.example.bowling.controller;
 
+import com.example.bowling.dto.Frame;
 import com.example.bowling.dto.Game;
+import com.example.bowling.dto.Player;
+import com.example.bowling.entity.FrameEntity;
 import com.example.bowling.service.GameService;
+import com.example.bowling.service.ScoringService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -22,6 +26,8 @@ public class GameController {
     @Autowired
     private GameService gameService;
     @Autowired
+    private ScoringService scoringService;
+    @Autowired
     private ModelMapper modelMapper;
 
     @PostMapping("/game")
@@ -35,6 +41,14 @@ public class GameController {
     public ResponseEntity<Game> findGame(@PathVariable UUID id) {
         return new ResponseEntity<>(
                 modelMapper.map(gameService.findGame(id), Game.class), HttpStatus.OK
+        );
+    }
+
+    @PostMapping("/player/{id}/frame")
+    public ResponseEntity<Player> addFrame(@PathVariable UUID id, @RequestBody Frame frame) {
+        return new ResponseEntity<>(
+                modelMapper.map(scoringService.handleAddFrame(id, modelMapper.map(frame, FrameEntity.class)), Player.class),
+                HttpStatus.OK
         );
     }
 }
