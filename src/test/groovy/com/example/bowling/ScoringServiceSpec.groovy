@@ -279,6 +279,7 @@ class ScoringServiceSpec extends Specification {
         "is length 1 and < 10"              | [4] as int[]
         "is length > 2 and not last frame"  | [1, 2, 3] as int[]
         "score is > 10"                     | [9, 5] as int[]
+        "X and 0"                           | [10, 0] as int[]
     }
 
     @Unroll
