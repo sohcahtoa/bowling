@@ -35,6 +35,7 @@ public class PlayerEntity {
     private GameEntity game;
 
     @OneToMany(mappedBy = "player", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OrderBy(value = "frameNumber ASC")
     @Builder.Default
     private List<FrameEntity> frames = new ArrayList<>();
 
