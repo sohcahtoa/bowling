@@ -1,6 +1,6 @@
-#Bowling Service
+# Bowling Service
 
-##To run locally
+## To run locally
 ```
 ./gradlew build
 ```
@@ -8,8 +8,8 @@
 docker-compose up --build
 ```
 
-##API
-###POST localhost:8080/bowling/game
+## API
+### POST localhost:8080/bowling/game
 Create a game with players with a body list of player names as strings
 
 for example ["kevin","monica"]
@@ -35,7 +35,7 @@ response example:
 }
 ```
 
-###GET localhost:8080/bowling/game/{id}
+### GET localhost:8080/bowling/game/{id}
 Get a game
 
 response:
@@ -59,7 +59,7 @@ response:
 }
 ```
 
-###POST localhost:8080/bowling/player/{id}/frame
+### POST localhost:8080/bowling/player/{id}/frame
 Add a frame to player
 
 body:
